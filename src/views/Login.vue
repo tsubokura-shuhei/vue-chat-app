@@ -113,6 +113,16 @@ import firebase from "@/firebase/firebase"
           console.log("success")
           console.log("user", result.user)
 
+          const auth = {
+            displayName: result.user.displayName,
+            email: result.user.email,
+            uid: result.user.uid,
+            refreshToken: result.user.refreshToken,
+            photoURL: result.user.photoURL
+          }
+
+          sessionStorage.setItem('user', JSON.stringify(auth))
+
           // TOPにリダイレクト処理
           this.$router.push('/')
         })

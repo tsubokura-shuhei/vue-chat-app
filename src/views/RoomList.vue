@@ -73,8 +73,16 @@ import CreateRoom from '@/components/modal/CreateRoom'
         console.log("snapshot", snapshot)
 
         snapshot.forEach(doc => {
-          console.log(doc.data())
-          this.rooms.push(doc.data())
+          // const data = {
+          //   name: doc.data().name,
+          //   thumbnailUrl: doc.data().thumbnailUrl,
+          //   createdAt: doc.data().createdAt
+          // }
+
+          const data = {...doc.data()}
+          data.id = doc.id
+          console.log(data)
+          this.rooms.push(data)
         })
 
       }

@@ -24,12 +24,14 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
+                  v-model="name"
                   label="Room Name*"
                   required
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-file-input
+                  v-model="file"
                   truncate-length="15"
                   accept="image/*"
                 ></v-file-input>
@@ -51,7 +53,7 @@
           <v-btn
             color="blue darken-1"
             text
-            @click="dialog = false"
+            @click="onSubmit"
           >
             Save
           </v-btn>
@@ -62,9 +64,41 @@
 </template>
 
 <script>
+import firebase from "@/firebase/firebase"
+
   export default {
     data: () => ({
       dialog: false,
+      name: "",
+      file: null
     }),
+    methods: {
+      async onSubmit() {
+        console.log("onSubmit call", this.name, this.file)
+
+        let thumbnailUrl = ""
+        if(this.file) {
+          const filePath = `/room/${this.file.name}`
+          await firebase.storage().ref()
+          .child(filePath)
+          .put(this.file)
+          .then(async snapshot => {
+            thumbnailUrl = await snapshot.ref.getDownloadURL()
+            console.log("thumbnailUrl", thumbnailUrl)
+          })
+        }
+
+        const roomRef = firebase.firestore().collection('rooms')
+        await roomRef.add({
+          name: this.name,
+          thumbnailUrl: thumbnailUrl,
+          createdAt: firebase.firestore.Timestamp.now()
+        })
+        .then(result => {
+          console.log("sucees to create room", result)
+          this.dialog = false
+        })
+      }
+    }
   }
 </script>
